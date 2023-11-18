@@ -25,6 +25,7 @@ public class BaseScreen {
         element.click();
         element.clear();
         element.sendKeys(text);
+        driver.hideKeyboard();
     }
 
     public void pause(int millis){
@@ -36,5 +37,17 @@ public class BaseScreen {
     }
     public void  waitElement(MobileElement element, int time){
         new WebDriverWait(driver, time).until(ExpectedConditions.visibilityOf(element));
+    }
+    public boolean shouldHave(MobileElement element, String text, int time){
+        return new WebDriverWait(driver, time).until(ExpectedConditions.textToBePresentInElement(element, text));
+    }
+
+    public boolean isDisplayedWithException(MobileElement element){
+        try{
+            waitElement(element, 10);
+            return element.isDisplayed();
+        }catch(Exception e){
+            return false;
+        }
     }
 }
