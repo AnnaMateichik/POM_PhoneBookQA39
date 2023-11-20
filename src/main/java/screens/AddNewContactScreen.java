@@ -17,7 +17,7 @@ public class AddNewContactScreen extends BaseScreen{
 
     @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/inputName']")
     MobileElement nameEditText;
-    @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/inputLastName']")
+    @FindBy(id="com.sheygam.contactapp:id/inputLastName") //// +
     MobileElement lastNameEditText;
     @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/inputEmail']")
     MobileElement emailEditText;

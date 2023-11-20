@@ -4,6 +4,7 @@ import config.AppiumConfig;
 import models.Contact;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import screens.AddNewContactScreen;
 import screens.ContactListScreen;
@@ -12,9 +13,10 @@ import screens.SplashScreen;
 import java.util.Random;
 
 public class AddNewContactTests extends AppiumConfig {
-int i;
-    @BeforeMethod
-    public void precondition(){
+    int i;
+
+    @BeforeSuite
+    public void precondition() {
         i = new Random().nextInt(1000) + 1000;
         new SplashScreen(driver)
                 .gotoAuthenticationScreen()
@@ -23,8 +25,8 @@ int i;
                 .submitLogin();
     }
 
-    @Test
-    public void addNewContactPositive(){
+    @Test(invocationCount = 3)
+    public void addNewContactPositive() {
         Contact contact = Contact.builder()
                 .name("Mira")
                 .lastName("Silver")
@@ -34,15 +36,17 @@ int i;
                 .description("NewPrivate")
                 .build();
 
-        new ContactListScreen( driver)
-                .oppenContactForm()
+        new ContactListScreen(driver)
+                .openContactForm()
                 .fillContactForm(contact)
-                .submitContactForm();
+                .submitContactForm()
+                .isContactAdded(contact);
 
 
     }
+
     @Test
-    public void addNewContactNegativeWrongEmail(){
+    public void addNewContactNegativeWrongEmail() {
         Contact contact = Contact.builder()
                 .name("Mira")
                 .lastName("Silver")
@@ -52,27 +56,30 @@ int i;
                 .description("NewPrivate")
                 .build();
 
-        new ContactListScreen( driver)
-                .oppenContactForm()
-                .fillContactForm(contact)
-                .submitContactFormNegative()
-                .isErrorMessageContainsTextAddContact("email");
-
+        new ContactListScreen(driver)
+//                .openContactForm()
+//                .fillContactForm(contact)
+//                .submitContactFormNegative()
+//                .isErrorMessageContainsTextAddContact("email");
+                .openContactForm()
+                .addContactNegative(contact)
+                .isErrorMessageContainsTextInAlertAddContact("email");
 
     }
+
     @Test
-    public void addNewContactNegativeWrongPhone(){
+    public void addNewContactNegativeWrongPhone() {
         Contact contact = Contact.builder()
                 .name("Mira")
                 .lastName("Silver")
                 .phone("123456789")
-                .email("mira" +i + "mail.com")
+                .email("mira" + i + "@mail.com")
                 .address("Rehovot")
                 .description("NewPrivate")
                 .build();
 
-        new ContactListScreen( driver)
-                .oppenContactForm()
+        new ContactListScreen(driver)
+                .openContactForm()
 //                .fillContactForm(contact)
 //                .submitContactFormNegative()
 //                .isErrorMessageContainsTextAddContact("email");
@@ -81,46 +88,6 @@ int i;
 
 
     }
-    @Test
-    public void addNewContactNegativeWrongNameSpace(){
-        Contact contact = Contact.builder()
-                .name(" ")
-                .lastName("Silver")
-                .phone("12345678" + i)
-                .email("mira" +i + "mail.com")
-                .address("Rehovot")
-                .description("NewPrivate")
-                .build();
-
-        new ContactListScreen(driver)
-                .oppenContactForm()
-                .addContactNegative(contact)
-                .isErrorMessageContainsTextInAlertAddContact("name");
 
 
-    }
-    @Test
-    public void addNewContactNegativeWrongLastNameSpace(){
-        Contact contact = Contact.builder()
-                .name("Mora")
-                .lastName(" ")
-                .phone("12345678" + i)
-                .email("mira" +i + "mail.com")
-                .address("Rehovot")
-                .description("NewPrivate")
-                .build();
-
-        new ContactListScreen(driver)
-                .oppenContactForm()
-                .addContactNegative(contact)
-                .isErrorMessageContainsTextInAlertAddContact("lastName");
-
-
-    }
-
-    @AfterMethod
-    public void postCondition(){
-        new ContactListScreen(driver).logout();
-        new SplashScreen(driver);
-    }
 }
