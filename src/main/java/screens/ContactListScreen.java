@@ -185,16 +185,16 @@ public ContactListScreen scrollingList(){
     return this;
 }
     public String lastPhoneAtScreen() {
-        return phoneList.get(7).getText();
+        return phoneList.get(phoneList.size() - 1).getText();
     }
     public boolean isEndOfList() {
         String lastBeforeScroll;
-        String lastListAfterScroll;
+        String lastAfterScroll;
         do {
             lastBeforeScroll = lastPhoneAtScreen();
             scrollingList();
-            lastListAfterScroll = lastPhoneAtScreen();
-        } while (!lastBeforeScroll.equals(lastListAfterScroll));
+            lastAfterScroll = lastPhoneAtScreen();
+        } while (!lastBeforeScroll.equals(lastAfterScroll));
         return true;
     }
 
