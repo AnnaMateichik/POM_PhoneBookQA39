@@ -1,6 +1,7 @@
 package screens;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.offset.PointOption;
@@ -47,6 +48,8 @@ public class ContactListScreen extends BaseScreen {
     @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/imageView2']")
     MobileElement screen;
 
+    @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/rowContainer'/[@index ='8']")
+    List<MobileElement> lastContact;
 
 
 
@@ -159,44 +162,41 @@ public class ContactListScreen extends BaseScreen {
                 .fillContactForm(contact)
                 .submitContactForm();
     }
+
+
 public ContactListScreen scrollingList(){
     waitElement(addButton, 5);
 
-
-
     int screenHeight = driver.manage().window().getSize().getHeight();
     int screenWidth = driver.manage().window().getSize().getWidth();
-
 
     int xStart = screenWidth / 2;
     int yStart = (int) (screenHeight * 0.8);
     int yEnd = (int) (screenHeight * 0.2);
 
-//   do {
        TouchAction touchAction = new TouchAction(driver);
        touchAction.press(PointOption.point(xStart, yStart))
                .waitAction()
                .moveTo(PointOption.point(xStart, yEnd))
                .release()
                .perform();
-//   }while();
 
 
     return this;
-
-
 }
-//    public boolean isEndOfList(List<MobileElement> list, String text){
-//        MobileElement contact = contacts.get(7);
-//        phoneNumber = contactPhone.getText();
-//        for (MobileElement element : list) {
-//            if (element.getText().contains(text))
-//                return true;
-//        }
-//        return false;
-//        Assert.assertFalse(phoneList.contains(phoneNumber));
-//
-//    }
+    public String lastPhoneAtScreen() {
+        return phoneList.get(7).getText();
+    }
+    public boolean isEndOfList() {
+        String lastBeforeScroll;
+        String lastListAfterScroll;
+        do {
+            lastBeforeScroll = lastPhoneAtScreen();
+            scrollingList();
+            lastListAfterScroll = lastPhoneAtScreen();
+        } while (!lastBeforeScroll.equals(lastListAfterScroll));
+        return true;
+    }
 
 
 }

@@ -43,7 +43,7 @@ public class RemoveContactsTests extends AppiumConfig {
     @Test
     public void moveToLastContactInTheList() {
         new ContactListScreen(driver)
-                .scrollingList();
+                .isEndOfList();
     }
 
 
