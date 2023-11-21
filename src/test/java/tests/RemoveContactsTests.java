@@ -12,26 +12,27 @@ public class RemoveContactsTests extends AppiumConfig {
     public void precondition() {
         new SplashScreen(driver)
                 .gotoAuthenticationScreen()
-                .fillEmail("anna2@mail.com")
+                .fillEmail("anna@mail.com")
                 .fillPassword("Qq12345$")
                 .submitLogin();
     }
 
     @BeforeMethod
-    public void providerContacts(){
-    new ContactListScreen(driver)
-            .provideContacts();
+    public void providerContacts() {
+        new ContactListScreen(driver)
+                .provideContacts();
     }
 
     @Test
-    public void removeOneContactPositive(){
+    public void removeOneContactPositive() {
         new ContactListScreen(driver)
                 .removeOneContact()
                 .isOneContactRemoved();
 
     }
+
     @Test
-    public void removeAllContactsPositive(){
+    public void removeAllContactsPositive() {
         new ContactListScreen(driver)
                 .removeAllContacts()
                 .isNoContacts();
@@ -39,9 +40,15 @@ public class RemoveContactsTests extends AppiumConfig {
     }
 
 
+    @Test
+    public void moveToLastContactInTheList() {
+        new ContactListScreen(driver)
+                .scrollingList();
+    }
+
 
     @AfterClass
-    public void postCondition(){
+    public void postCondition() {
         new ContactListScreen(driver).logout();
     }
 

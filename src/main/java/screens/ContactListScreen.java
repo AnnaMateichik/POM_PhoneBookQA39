@@ -5,6 +5,7 @@ import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.offset.PointOption;
 import models.Contact;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.support.FindBy;
 import org.testng.Assert;
@@ -41,6 +42,10 @@ public class ContactListScreen extends BaseScreen {
     MobileElement contactPhone;
     @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/emptyTxt']")
     MobileElement emptyTxtView;
+    @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/rowContainer']")
+    MobileElement contactInList;
+    @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/imageView2']")
+    MobileElement screen;
 
 
 
@@ -154,8 +159,44 @@ public class ContactListScreen extends BaseScreen {
                 .fillContactForm(contact)
                 .submitContactForm();
     }
-//public ContactListScreen scrollingList()
-    //public boolean isEndOfList()
+public ContactListScreen scrollingList(){
+    waitElement(addButton, 5);
+
+
+
+    int screenHeight = driver.manage().window().getSize().getHeight();
+    int screenWidth = driver.manage().window().getSize().getWidth();
+
+
+    int xStart = screenWidth / 2;
+    int yStart = (int) (screenHeight * 0.8);
+    int yEnd = (int) (screenHeight * 0.2);
+
+//   do {
+       TouchAction touchAction = new TouchAction(driver);
+       touchAction.press(PointOption.point(xStart, yStart))
+               .waitAction()
+               .moveTo(PointOption.point(xStart, yEnd))
+               .release()
+               .perform();
+//   }while();
+
+
+    return this;
+
+
+}
+//    public boolean isEndOfList(List<MobileElement> list, String text){
+//        MobileElement contact = contacts.get(7);
+//        phoneNumber = contactPhone.getText();
+//        for (MobileElement element : list) {
+//            if (element.getText().contains(text))
+//                return true;
+//        }
+//        return false;
+//        Assert.assertFalse(phoneList.contains(phoneNumber));
+//
+//    }
 
 
 }
