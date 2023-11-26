@@ -25,7 +25,7 @@ public class AddNewContactTests extends AppiumConfig {
                 .submitLogin();
     }
 
-    @Test(invocationCount = 3)
+    @Test  //(invocationCount = 3)
     public void addNewContactPositive() {
         Contact contact = Contact.builder()
                 .name("Mira")

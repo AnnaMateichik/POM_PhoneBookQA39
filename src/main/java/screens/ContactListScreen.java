@@ -43,14 +43,6 @@ public class ContactListScreen extends BaseScreen {
     MobileElement contactPhone;
     @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/emptyTxt']")
     MobileElement emptyTxtView;
-    @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/rowContainer']")
-    MobileElement contactInList;
-    @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/imageView2']")
-    MobileElement screen;
-
-    @FindBy(xpath = "//*[@resource-id='com.sheygam.contactapp:id/rowContainer'/[@index ='8']")
-    List<MobileElement> lastContact;
-
 
 
 
@@ -59,8 +51,8 @@ public class ContactListScreen extends BaseScreen {
 
     }
 
-    public AuthenticationScreen logout(){
-        if(isDisplayedWithException(moreOptions)) {
+    public AuthenticationScreen logout() {
+        if (isDisplayedWithException(moreOptions)) {
             moreOptions.click();
             logoutButton.click();
         }
@@ -68,24 +60,32 @@ public class ContactListScreen extends BaseScreen {
 
 
     }
-    public ContactListScreen assertContactListActivityPresent(){
+
+    public ContactListScreen assertContactListActivityPresent() {
         Assert.assertTrue(isContactListActivityPresent());
         return this;
     }
-    public AddNewContactScreen openContactForm(){
+
+    public AddNewContactScreen openContactForm() {
 //        waitElement(addButton, 5);
-        if(isDisplayedWithException(addButton)) {
+        if (isDisplayedWithException(addButton)) {
             addButton.click();
         }
 
         return new AddNewContactScreen(driver);
     }
 
-    public ContactListScreen isContactAdded(Contact contact){
-        boolean checkName = isContainsText(nameList, contact.getName()
-                + " " + contact.getLastName());
-        boolean checkPhone = isContainsText(phoneList, contact.getPhone());
-        Assert.assertTrue(checkName && checkPhone);
+    public ContactListScreen isContactAdded(Contact contact) {
+        boolean res = false;
+        while (!res) {
+            boolean checkName = isContainsText(nameList, contact.getName()
+                    + " " + contact.getLastName());
+            boolean checkPhone = isContainsText(phoneList, contact.getPhone());
+            res = checkName && checkPhone;
+            if (res == false) isEndOfListClassVersion();
+
+        }
+        Assert.assertTrue(res);
         return this;
     }
 
@@ -105,7 +105,7 @@ public class ContactListScreen extends BaseScreen {
         Rectangle rect = contact.getRect();
 
         int xStart = rect.getX() + rect.getWidth() / 8;
-        int xEnd = xStart + rect.getWidth()  * 6 / 8;
+        int xEnd = xStart + rect.getWidth() * 6 / 8;
         int y = rect.getY() + rect.getHeight() / 2;
 
         TouchAction<?> touchAction = new TouchAction<>(driver);
@@ -115,39 +115,69 @@ public class ContactListScreen extends BaseScreen {
                 .release()
                 .perform();
 
-        waitElement(yesButton,5);
+        waitElement(yesButton, 5);
         yesButton.click();
         return this;
     }
+    public EditContactScreen updateOneContact() {
+        waitElement(addButton, 5);
+        MobileElement contact = contacts.get(0);
+        phoneNumber = contactPhone.getText();
+        System.out.println(phoneNumber);
+        Rectangle rect = contact.getRect();
 
-    public ContactListScreen isOneContactRemoved(){
+        int xEnd = rect.getX() + rect.getWidth() / 8;
+        int xStart = xEnd + rect.getWidth() * 6 / 8;
+        int y = rect.getY() + rect.getHeight() / 2;
+
+        TouchAction<?> touchAction = new TouchAction<>(driver);
+        touchAction
+                .longPress(PointOption.point(xStart, y))
+                .moveTo(PointOption.point(xEnd, y))
+                .release()
+                .perform();
+
+        return new EditContactScreen(driver);
+    }
+
+    public  boolean isContactContains(String text){
+        pause(3000);
+        contacts.get(0).click();
+        Contact contact = new ViewContactScreen(driver)
+                .viewContactObject();
+
+        driver.navigate().back();
+        return contact.toString().contains(text);
+    }
+    public ContactListScreen isOneContactRemoved() {
         Assert.assertFalse(phoneList.contains(phoneNumber));
         return this;
     }
 
-    public  ContactListScreen removeAllContacts(){
-        waitElement(addButton, 5 );
-        while(contacts.size() > 0){
+    public ContactListScreen removeAllContacts() {
+        waitElement(addButton, 5);
+        while (contacts.size() > 0) {
             removeOneContact();
         }
         return this;
     }
-    public ContactListScreen isNoContacts(){
+
+    public ContactListScreen isNoContacts() {
         Assert.assertTrue(shouldHave(emptyTxtView, "No Contacts", 5));
         return this;
     }
 
-    public ContactListScreen provideContacts(){
-        if(contacts.size() < 3){
-            for(int i =0; i <3; i++){
+    public ContactListScreen provideContacts() {
+        if (contacts.size() < 3) {
+            for (int i = 0; i < 3; i++) {
                 addContact();
             }
         }
         return this;
     }
 
-    public void addContact(){
-        int  i = new Random().nextInt(1000) + 1000;
+    public void addContact() {
+        int i = new Random().nextInt(1000) + 1000;
         Contact contact = Contact.builder()
                 .name("Mira")
                 .lastName("Silver")
@@ -164,29 +194,31 @@ public class ContactListScreen extends BaseScreen {
     }
 
 
-public ContactListScreen scrollingList(){
-    waitElement(addButton, 5);
+    public ContactListScreen scrollingList() {
+        waitElement(addButton, 5);
 
-    int screenHeight = driver.manage().window().getSize().getHeight();
-    int screenWidth = driver.manage().window().getSize().getWidth();
+        int screenHeight = driver.manage().window().getSize().getHeight();
+        int screenWidth = driver.manage().window().getSize().getWidth();
 
-    int xStart = screenWidth / 2;
-    int yStart = (int) (screenHeight * 0.8);
-    int yEnd = (int) (screenHeight * 0.2);
+        int xStart = screenWidth / 2;
+        int yStart = (int) (screenHeight * 0.8);
+        int yEnd = (int) (screenHeight * 0.2);
 
-       TouchAction touchAction = new TouchAction(driver);
-       touchAction.press(PointOption.point(xStart, yStart))
-               .waitAction()
-               .moveTo(PointOption.point(xStart, yEnd))
-               .release()
-               .perform();
+        TouchAction touchAction = new TouchAction(driver);
+        touchAction.press(PointOption.point(xStart, yStart))
+                .waitAction()
+                .moveTo(PointOption.point(xStart, yEnd))
+                .release()
+                .perform();
 
 
-    return this;
-}
+        return this;
+    }
+
     public String lastPhoneAtScreen() {
         return phoneList.get(phoneList.size() - 1).getText();
     }
+
     public boolean isEndOfList() {
         String lastBeforeScroll;
         String lastAfterScroll;
@@ -198,5 +230,42 @@ public ContactListScreen scrollingList(){
         return true;
     }
 
+    public ContactListScreen scrollingListClassVersion() {
+        waitElement(addButton, 5);
+
+        MobileElement contact = contacts.get(contacts.size() - 1);
+
+        Rectangle rect = contact.getRect();
+        int xRow = rect.getX() + rect.getWidth() / 2;
+        int yRow = rect.getY() + rect.getHeight() / 2;
+
+        TouchAction<?> action = new TouchAction<>(driver);
+        action.longPress(PointOption.point(xRow, yRow))
+                .moveTo(PointOption.point(xRow, 0))
+                .release()
+                .perform();
+
+        return this;
+    }
+
+    public boolean isEndOfListClassVersion() {
+
+        String beforeScroll = nameList.get(nameList.size() - 1)
+                .getText() + " " +
+                phoneList
+                        .get(nameList.size() - 1)
+                        .getText();
+        scrollingListClassVersion();
+
+
+        String afterScroll = nameList.get(nameList.size() - 1)
+                .getText() + " " +
+                phoneList
+                        .get(nameList.size() - 1)
+                        .getText();
+        if (beforeScroll.equals(afterScroll)) return true;
+        return false;
+
+    }
 
 }
